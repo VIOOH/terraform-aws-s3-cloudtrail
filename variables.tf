@@ -12,12 +12,6 @@ variable "logging_target_bucket" {
   description = "The name of the bucket that will receive the log objects."
 }
 
-variable "versioning_enabled" {
-  default     = true
-  type        = string
-  description = "Enable versioning. Versioning is a means of keeping multiple variants of an object in the same bucket."
-}
-
 variable "lifecycle_rule_enabled" {
   default     = true
   type        = string
