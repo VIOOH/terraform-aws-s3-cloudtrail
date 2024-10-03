@@ -32,7 +32,8 @@ resource "aws_s3_bucket" "default" {
   # You can, however, suspend versioning on that bucket.
   # https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html
   versioning {
-    enabled = "${var.versioning_enabled}"
+    enabled = "true"
+    mfa_delete = "true"
   }
 
   # S3 encrypts your data at the object level as it writes it to disks in its data centers
