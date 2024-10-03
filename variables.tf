@@ -24,6 +24,12 @@ variable "lifecycle_rule_enabled" {
   description = "Specifies lifecycle rule status."
 }
 
+variable "create_lifecycle_rule" {
+  default     = true
+  type        = "string"
+  description = "Create lifecycle rule."
+}
+
 variable "lifecycle_rule_prefix" {
   default     = ""
   type        = "string"
