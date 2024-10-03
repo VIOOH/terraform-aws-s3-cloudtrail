@@ -51,45 +51,51 @@ resource "aws_s3_bucket" "default" {
 
   # To manage your objects so that they are stored cost effectively throughout their lifecycle, configure their lifecycle.
   # https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html
-  lifecycle_rule {
-    enabled = "${var.lifecycle_rule_enabled}"
-    prefix  = "${var.lifecycle_rule_prefix}"
 
-    # The STANDARD_IA and ONEZONE_IA storage classes are designed for long-lived and infrequently accessed data.
-    # https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-class-intro.html#sc-infreq-data-access
-    transition {
-      days          = "${var.standard_ia_transition_days}"
-      storage_class = "STANDARD_IA"
-    }
+  # Dynamic Lifecycle Rule
+  dynamic "lifecycle_rule" {
+    for_each = var.create_lifecycle_rule ? [1] : []
 
-    # The GLACIER storage class is suitable for archiving data where data access is infrequent.
-    # https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-class-intro.html#sc-glacier
-    transition {
-      days          = "${var.glacier_transition_days}"
-      storage_class = "GLACIER"
-    }
+    content {
+      enabled = "${var.lifecycle_rule_enabled}"
+      prefix  = "${var.lifecycle_rule_prefix}"
 
-    # For a versioned bucket, there are several considerations that guide how Amazon S3 handles the expiration action.
-    #   - The Expiration action applies only to the current version.
-    #   - S3 doesn't take any action if there are one or more object versions and the delete marker is the current version.
-    #   - If the current object version is the only object version and it is also a delete marker,
-    #     S3 removes the expired object delete marker.
-    # https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html
-    expiration {
-      days = "${var.expiration_days}"
-    }
+      # The STANDARD_IA and ONEZONE_IA storage classes are designed for long-lived and infrequently accessed data.
+      # https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-class-intro.html#sc-infreq-data-access
+      transition {
+        days          = "${var.standard_ia_transition_days}"
+        storage_class = "STANDARD_IA"
+      }
 
-    # Specifies when noncurrent objects transition to a specified storage class.
-    # https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#intro-lifecycle-rules-actions
-    noncurrent_version_transition {
-      days          = "${var.glacier_noncurrent_version_transition_days}"
-      storage_class = "GLACIER"
-    }
+      # The GLACIER storage class is suitable for archiving data where data access is infrequent.
+      # https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-class-intro.html#sc-glacier
+      transition {
+        days          = "${var.glacier_transition_days}"
+        storage_class = "GLACIER"
+      }
 
-    # Specifies when noncurrent object versions expire.
-    # https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#intro-lifecycle-rules-actions
-    noncurrent_version_expiration {
-      days = "${var.noncurrent_version_expiration_days}"
+      # For a versioned bucket, there are several considerations that guide how Amazon S3 handles the expiration action.
+      #   - The Expiration action applies only to the current version.
+      #   - S3 doesn't take any action if there are one or more object versions and the delete marker is the current version.
+      #   - If the current object version is the only object version and it is also a delete marker,
+      #     S3 removes the expired object delete marker.
+      # https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html
+      expiration {
+        days = "${var.expiration_days}"
+      }
+
+      # Specifies when noncurrent objects transition to a specified storage class.
+      # https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#intro-lifecycle-rules-actions
+      noncurrent_version_transition {
+        days          = "${var.glacier_noncurrent_version_transition_days}"
+        storage_class = "GLACIER"
+      }
+
+      # Specifies when noncurrent object versions expire.
+      # https://docs.aws.amazon.com/AmazonS3/latest/dev/intro-lifecycle-rules.html#intro-lifecycle-rules-actions
+      noncurrent_version_expiration {
+        days = "${var.noncurrent_version_expiration_days}"
+      }
     }
   }
 
