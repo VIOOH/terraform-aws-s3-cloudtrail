@@ -109,6 +109,16 @@ resource "aws_s3_bucket" "default" {
   tags = "${var.tags}"
 }
 
+# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block
+resource "aws_s3_bucket_public_access_block" "default" {
+  bucket = aws_s3_bucket.default.id
+
+  block_public_acls       = true
+  block_public_policy     = false
+  ignore_public_acls      = true
+  restrict_public_buckets = false
+}
+
 # https://www.terraform.io/docs/providers/aws/r/s3_bucket_policy.html
 resource "aws_s3_bucket_policy" "default" {
   bucket = "${aws_s3_bucket.default.id}"
